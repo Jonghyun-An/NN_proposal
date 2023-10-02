@@ -1,6 +1,8 @@
+#!/usr/bin/env python3
+
 import numpy as np
-import matplotlib.pyplot as plt
 import pickle
+import random
 
 
 def unpickle(file):
@@ -10,34 +12,36 @@ def unpickle(file):
 
 
 def load_cifar_10_data(data_dir, negatives=False):
+    validation_size = 10000
+
     meta_data_dict = unpickle(data_dir + "/batches.meta")
     cifar_label_names = meta_data_dict[b'label_names']
     cifar_label_names = np.array(cifar_label_names)
 
-    # training data
-    cifar_train_data = None
-    cifar_train_filenames = []
-    cifar_train_labels = []
+    # training/validation data
+    cifar_all_train_data = None
+    cifar_all_train_filenames = []
+    cifar_all_train_labels = []
 
-    for i in range(1, 5):
-        cifar_train_data_dict = unpickle(data_dir + "/train_batch_{}".format(i))
-        cifar_train_data = cifar_train_data_dict[b'data'] if i == 1 else np.vstack((cifar_train_data, cifar_train_data_dict[b'data']))
-        cifar_train_filenames += cifar_train_data_dict[b'filenames']
-        cifar_train_labels += cifar_train_data_dict[b'labels']
+    for i in range(1, 6):
+        cifar_all_train_data_dict = unpickle(data_dir + "/data_batch_{}".format(i))
+        cifar_all_train_data = cifar_all_train_data_dict[b'data'] if i == 1 else np.vstack((cifar_all_train_data, cifar_all_train_data_dict[b'data']))
+        cifar_all_train_filenames += cifar_all_train_data_dict[b'filenames']
+        cifar_all_train_labels += cifar_all_train_data_dict[b'labels']
 
-    cifar_train_data = cifar_train_data.reshape((len(cifar_train_data), 3, 32, 32))
-    cifar_train_filenames = np.array(cifar_train_filenames)
-    cifar_train_labels = np.array(cifar_train_labels)
+    cifar_all_train_data = cifar_all_train_data.reshape((len(cifar_all_train_data), 3, 32, 32))
+    cifar_all_train_filenames = np.array(cifar_all_train_filenames)
+    cifar_all_train_labels = np.array(cifar_all_train_labels)
 
-    # validation data
-    cifar_val_data_dict = unpickle(data_dir + "/val_batch")
-    cifar_val_data = cifar_val_data_dict[b'data']
-    cifar_val_filenames = cifar_val_data_dict[b'filenames']
-    cifar_val_labels = cifar_val_data_dict[b'labels']
+    indices = list(range(len(cifar_all_train_labels)))
+    random.shuffle(indices)
 
-    cifar_val_data = cifar_val_data.reshape((len(cifar_val_data), 3, 32, 32))
-    cifar_val_filenames = np.array(cifar_val_filenames)
-    cifar_val_labels = np.array(cifar_val_labels)
+    cifar_train_data = cifar_all_train_data[validation_size:]
+    cifar_train_filenames = cifar_all_train_filenames[validation_size:]
+    cifar_train_labels = cifar_all_train_labels[validation_size:]
+    cifar_val_data = cifar_all_train_data[:validation_size]
+    cifar_val_filenames = cifar_all_train_filenames[:validation_size]
+    cifar_val_labels = cifar_all_train_labels[:validation_size]
 
     # test data
     cifar_test_data_dict = unpickle(data_dir + "/test_batch")
@@ -56,7 +60,7 @@ def load_cifar_10_data(data_dir, negatives=False):
 
 
 if __name__ == "__main__":
-    cifar_10_dir = 'cifar-10'
+    cifar_10_dir = './datasets/cifar-10-batches-py'
 
     train_data, train_filenames, train_labels, \
     val_data, val_filenames, val_labels, \

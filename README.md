@@ -57,17 +57,17 @@ The classes are completely mutually exclusive. There is no overlap between autom
 
 ### **Dataset structure**
 
-There are 40,000 training images, 10,000 validation images and 10,000 test images.
+There are 50,000 training images (including 10,000 validation images) and 10,000 test images.
 
 ```
-cifar-10/
+datasets/cifar-10-batches-py/
 |-- batches.meta
+|-- data_batch_1
+|-- data_batch_2
+|-- data_batch_3
+|-- data_batch_4
+|-- data_batch_5
 |-- readme.html
-|-- test_batch
-|-- train_batch_1
-|-- train_batch_2
-|-- train_batch_3
-|-- train_batch_4
 `-- val_batch
 
 0 directories, 8 files
@@ -107,5 +107,4 @@ Test data:  (10000, 3, 32, 32)
 Test filenames:  (10000,)
 Test labels:  (10000,)
 Label names:  (10,)
-
 ```
